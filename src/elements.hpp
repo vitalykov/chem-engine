@@ -13,14 +13,14 @@ public:
   };
 
   Elements();
-  inline ElementInfo GetElementInfo(const std::string& symbol) const {
-    return elements_.at(symbol);
+  inline ElementInfo GetElementInfo(std::string_view symbol) const {
+    return elements_.at(std::string(symbol));
   }
-  inline int GetElementNumber(const std::string& symbol) const {
-    return elements_.at(symbol).index;
+  inline int GetElementNumber(std::string_view symbol) const {
+    return elements_.at(std::string(symbol)).index;
   }
-  inline double GetElementMass(const std::string& symbol) const {
-    return elements_.at(symbol).mass;
+  inline double GetElementMass(std::string_view symbol) const {
+    return elements_.at(std::string(symbol)).mass;
   }
 
 private:

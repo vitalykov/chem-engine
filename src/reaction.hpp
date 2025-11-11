@@ -2,6 +2,8 @@
 
 #include <initializer_list>
 #include <unordered_map>
+#include <string>
+#include <string_view>
 
 #include "compound.hpp"
 
@@ -11,6 +13,7 @@ class Reaction {
 public:
   Reaction(std::initializer_list<Compound> reagents,
            std::initializer_list<Compound> products, double k = 0.01);
+  Reaction(std::string_view equation, double k = 0.01);
 
   inline const auto& Reagents() const noexcept { return reagents_; }
   inline const auto& Products() const noexcept { return products_; }

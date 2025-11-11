@@ -6,9 +6,9 @@ namespace chem {
 
 class Atom {
 public:
-  Atom(const std::string& symbol);
-  inline auto GetMass() const { return mass_; }
-  inline auto GetIndex() const { return index_; }
+  Atom(std::string_view symbol);
+  inline auto Mass() const { return mass_; }
+  inline auto Index() const { return index_; }
 
 private:
   int index_;

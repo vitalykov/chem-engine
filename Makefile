@@ -1,12 +1,13 @@
-SRC := ./src
-TEST_EXEC := $(SRC)/test
+SRC_DIR := ./src
+SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
+TEST_EXEC := $(SRC_DIR)/test
 
 .PHONY: test
 test: $(TEST_EXEC)
-	cd $(SRC) && ./test
+	cd $(SRC_DIR) && ./test
 
-$(TEST_EXEC):
-	g++ -Wall $(SRC)/*.cpp -o $@
+$(TEST_EXEC): $(SOURCES)
+	g++ -Wall $^ -o $@
 
 .PHONY: clean
 clean:

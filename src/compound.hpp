@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include <string>
+#include <string_view>
 
 #include "atom.hpp"
 
@@ -12,6 +13,8 @@ namespace chem {
 class Compound {
 public:
   Compound(std::initializer_list<Atom> atoms, const std::string& name);
+  Compound(std::string_view formula);
+  Compound(std::string_view formula, std::string_view name);
   inline std::vector<Atom> GetAtoms() const { return atoms_; }
   inline auto MolMass() const { return mol_mass_; }
   inline auto Name() const { return name_; }

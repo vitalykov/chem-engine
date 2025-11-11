@@ -4,7 +4,7 @@
 
 namespace chem {
 
-Atom::Atom(const std::string& symbol) {
+Atom::Atom(std::string_view symbol) {
   static auto elements {Elements()};
   index_ = elements.GetElementNumber(symbol);
   mass_ = elements.GetElementMass(symbol);

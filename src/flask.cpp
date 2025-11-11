@@ -12,20 +12,29 @@ Flask::Flask(std::initializer_list<Substance> substances,
   for (const auto& substance : substances) {
     concentrations_[substance.GetCompound()] += substance.Moles() / volume;
   }
+  for (const auto& r : reactions) {
+    for (const auto& [compound, coeff] : r.Reagents()) {
+      concentrations_[compound];
+    }
+    for (const auto& [compound, coeff] : r.Products()) {
+      concentrations_[compound];
+    }
+  }
 }
 
 void Flask::RunReactions(double dt, double duration) {
+  constexpr char delim {','};
   auto out_file {std::ofstream("data.csv")};
-  out_file << "t;";
+  out_file << "t" << delim;
   for (const auto& [compound, _] : concentrations_) {
-    out_file << compound.Name() << ';';
+    out_file << compound.Name() << delim;
   }
   out_file << '\n';
   for (double t = 0.0; t < duration; t += dt) {
-    out_file << t << ';';
+    out_file << t << delim;
     for (const auto& reaction : reactions_) {
       for (const auto& [_, conc] : concentrations_) {
-        out_file << conc << ';';
+        out_file << conc << delim;
       }
       out_file << '\n';
       auto k {reaction.K()};
