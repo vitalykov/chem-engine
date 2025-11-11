@@ -64,11 +64,11 @@ Reaction::Reaction(std::string_view equation, double k) : k_{k} {
 void Reaction::Print() const {
   std::cout << "Reagents" << '\n';
   for (const auto &[mol, count] : reagents_) {
-    std::cout << count << ' ' << mol.Name() << ' ' << mol.MolMass() << '\n';
+    std::cout << count << ' ' << mol.Name() << ' ' << mol.Mass() << '\n';
   }
   std::cout << "Products" << '\n';
   for (const auto &[mol, count] : products_) {
-    std::cout << count << ' ' << mol.Name() << ' ' << mol.MolMass() << '\n';
+    std::cout << count << ' ' << mol.Name() << ' ' << mol.Mass() << '\n';
   }
   std::cout.flush();
 }

@@ -6,8 +6,8 @@ namespace chem {
 
 Atom::Atom(std::string_view symbol) {
   static auto elements {Elements()};
-  index_ = elements.GetElementNumber(symbol);
-  mass_ = elements.GetElementMass(symbol);
+  index_ = elements.Index(symbol);
+  mass_ = elements.Mass(symbol);
 }
 
 }  // namespace chem

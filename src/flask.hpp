@@ -15,7 +15,7 @@ public:
         std::initializer_list<Reaction> reactions, double volume = 1.0);
   Flask() : volume_{1.0} {}
 
-  inline void AddMolecule(const Substance &substance) {
+  inline void AddSubstrance(const Substance &substance) {
     concentrations_[substance.GetCompound()] += substance.Moles() / volume_;
   }
 

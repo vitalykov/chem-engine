@@ -22,6 +22,6 @@ private:
 template<>
 struct std::hash<chem::Substance> {
   std::size_t operator()(const chem::Substance& substance) const noexcept {
-    return std::hash<double>{}(substance.GetCompound().MolMass());
+    return std::hash<double>{}(substance.GetCompound().Mass());
   }
 };

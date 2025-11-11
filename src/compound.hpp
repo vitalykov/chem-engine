@@ -15,8 +15,8 @@ public:
   Compound(std::initializer_list<Atom> atoms, const std::string& name);
   Compound(std::string_view formula);
   Compound(std::string_view formula, std::string_view name);
-  inline std::vector<Atom> GetAtoms() const { return atoms_; }
-  inline auto MolMass() const { return mol_mass_; }
+  inline std::vector<Atom> Atoms() const { return atoms_; }
+  inline auto Mass() const { return mol_mass_; }
   inline auto Name() const { return name_; }
   inline bool operator==(const Compound& other) const { return mol_mass_ == other.mol_mass_; }
 
@@ -31,6 +31,6 @@ private:
 template<>
 struct std::hash<chem::Compound> {
   std::size_t operator()(const chem::Compound& mol) const noexcept {
-    return std::hash<double>{}(mol.MolMass());
+    return std::hash<double>{}(mol.Mass());
   }
 };

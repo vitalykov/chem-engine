@@ -38,7 +38,7 @@ struct ChemComponent {
 //   for (std::sregex_iterator pit(component.begin(), component.end(), pattern);
 //        pit != std::sregex_iterator{}; ++pit) {
 //     auto symbol{(*pit)[0]};
-//     std::cout << symbol << ':' << elements.GetElementNumber(symbol) << ' ';
+//     std::cout << symbol << ':' << elements.Index(symbol) << ' ';
 //     std::cout << (*pit)[kIndex] << ' ';
 //   }
 //   std::cout << '\n';
