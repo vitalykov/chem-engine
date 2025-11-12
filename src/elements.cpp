@@ -6,7 +6,7 @@
 namespace chem {
 
 Elements::Elements() {
-  std::ifstream file {"elements"};
+  std::ifstream file {"data/elements.txt"};
   std::string symbol;
   int n;
   double mass;

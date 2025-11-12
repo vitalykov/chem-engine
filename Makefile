@@ -1,14 +1,12 @@
-SRC_DIR := ./src
-SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
-TEST_EXEC := $(SRC_DIR)/test
+TESTS_DIR = tests
+TESTS_EXE = $(TESTS_DIR)/test-runner
 
-.PHONY: test
-test: $(TEST_EXEC)
-	cd $(SRC_DIR) && ./test
-
-$(TEST_EXEC): $(SOURCES)
-	g++ -Wall $^ -o $@
+PHONY: test
+test:
+	@cmake -B tests -S .
+	@cmake --build $(TESTS_DIR)
+	./$(TESTS_EXE)
 
 .PHONY: clean
 clean:
-	rm -f $(TEST_EXEC)
+	rm -rf $(TESTS_DIR)
