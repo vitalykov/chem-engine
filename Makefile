@@ -1,11 +1,13 @@
-TESTS_DIR = tests
+TESTS_DIR = build
 TESTS_EXE = $(TESTS_DIR)/test-runner
 
 PHONY: test
-test:
-	@cmake -B tests -S .
-	@cmake --build $(TESTS_DIR)
+test: $(TESTS_EXE)
 	./$(TESTS_EXE)
+
+$(TESTS_EXE):
+	@cmake -B $(TESTS_DIR) -S .
+	@cmake --build $(TESTS_DIR) --parallel
 
 .PHONY: clean
 clean:

@@ -40,9 +40,11 @@ target_sources(chem
 
 add_executable(test-runner)
 
+file(GLOB CHEM_TESTS "test/*.cpp")
+
 target_sources(test-runner
   PRIVATE
-    src/test.cpp
+    ${CHEM_TESTS}
 )
 
 target_link_libraries(test-runner
