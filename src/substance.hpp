@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 #include "compound.hpp"
 
 namespace chem {
@@ -7,6 +9,7 @@ namespace chem {
 class Substance {
 public:
   Substance(const Compound& compound, double moles) : compound_{compound}, moles_{moles} {}
+  Substance(std::string_view formula, double moles) : compound_{Compound(formula)}, moles_{moles} {}
   inline const Compound& GetCompound() const noexcept { return compound_; }
   inline double Moles() const noexcept { return moles_; }
   inline auto Name() const noexcept { return GetCompound().Name(); }

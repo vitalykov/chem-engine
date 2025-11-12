@@ -17,7 +17,7 @@ public:
 
   inline const auto& Reagents() const noexcept { return reagents_; }
   inline const auto& Products() const noexcept { return products_; }
-  inline const auto& K() const noexcept { return k_; }
+  inline const auto& RateConst() const noexcept { return k_; }
 
   void Print() const;
 

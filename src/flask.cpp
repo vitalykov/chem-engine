@@ -12,7 +12,10 @@ Flask::Flask(std::initializer_list<Substance> substances,
   for (const auto& substance : substances) {
     concentrations_[substance.GetCompound()] += substance.Moles() / volume;
   }
-  for (const auto& r : reactions) {
+}
+
+void Flask::RunReactions(double dt, double duration) {
+  for (const auto& r : reactions_) {
     for (const auto& [compound, coeff] : r.Reagents()) {
       concentrations_[compound];
     }
@@ -20,9 +23,7 @@ Flask::Flask(std::initializer_list<Substance> substances,
       concentrations_[compound];
     }
   }
-}
 
-void Flask::RunReactions(double dt, double duration) {
   constexpr char delim {','};
   auto out_file {std::ofstream("data.csv")};
   out_file << "t" << delim;
@@ -30,24 +31,35 @@ void Flask::RunReactions(double dt, double duration) {
     out_file << compound.Name() << delim;
   }
   out_file << '\n';
+
+  auto& old_conc {concentrations_};
+  auto new_conc {concentrations_};
   for (double t = 0.0; t < duration; t += dt) {
     out_file << t << delim;
+    for (const auto& [_, conc] : old_conc) {
+      out_file << conc << delim;
+    }
+    out_file << '\n';
     for (const auto& reaction : reactions_) {
-      for (const auto& [_, conc] : concentrations_) {
-        out_file << conc << delim;
-      }
-      out_file << '\n';
-      auto k {reaction.K()};
-      double conc_product {1.0};
+      auto k {reaction.RateConst()};
+      double conc_mult {1.0};
       for (const auto& [compound, coeff] : reaction.Reagents()) {
-        conc_product *= std::pow(concentrations_[compound], coeff);
+        conc_mult *= std::pow(old_conc[compound], coeff);
       }
+      auto rate {k * conc_mult};
       for (const auto& [compound, coeff] : reaction.Reagents()) {
-        concentrations_[compound] -= coeff * k * conc_product;
+        new_conc[compound] -= coeff * rate;
       }
       for (const auto& [compound, coeff] : reaction.Products()) {
-        concentrations_[compound] += coeff * k * conc_product;
+        new_conc[compound] += coeff * rate;
       }
+    }
+
+    old_conc.swap(new_conc);
+    for (auto old_it {old_conc.begin()}, new_it {new_conc.begin()};
+         new_it != new_conc.end();
+         ++new_it, ++old_it) {
+      new_it->second = old_it->second;
     }
   }
 }
