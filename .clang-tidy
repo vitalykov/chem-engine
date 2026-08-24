@@ -2,8 +2,11 @@
 Checks: >
   -*,
   bugprone-*,
+  -bugprone-easily-swappable-parameters,
   performance-*,
   modernize-*,
+  -modernize-use-trailing-return-type,
+  -modernize-use-nodiscard,
   cppcoreguidelines-pro-type-cstyle-cast,
   cppcoreguidelines-pro-type-static-cast-downcast,
   cppcoreguidelines-slicing,
