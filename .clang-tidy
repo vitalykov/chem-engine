@@ -14,7 +14,8 @@ Checks: >
   readability-container-size-empty,
   readability-implicit-bool-conversion,
   readability-inconsistent-declaration-parameter-name,
-  readability-named-parameter
+  readability-named-parameter,
+  readability-identifier-naming
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 CheckOptions:
@@ -22,6 +23,44 @@ CheckOptions:
     value: 'false'
   - key: readability-braces-around-statements.ShortStatementLines
     value: '0'
+  - key: readability-identifier-naming.TypeNameCase
+    value: 'CamelCase'
+  - key: readability-identifier-naming.TemplateParameterNameCase
+    value: 'CamelCase'
+  - key: readability-identifier-naming.FunctionNameCase
+    value: 'camelBack'
+  - key: readability-identifier-naming.MethodNameCase
+    value: 'camelBack'
+  - key: readability-identifier-naming.LocalVariableNameCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.GlobalVariableNameCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.StaticVariableNameCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.ParameterNameCase
+    value: 'lower_case'
+  - key: readability-identifier-naming.PrivateMemberNameSuffix
+    value: '_'
+  - key: readability-identifier-naming.ProtectedMemberNameSuffix
+    value: '_'
+  - key: readability-identifier-naming.GlobalConstantNamePrefix
+    value: 'k'
+  - key: readability-identifier-naming.GlobalConstantNameCase
+    value: 'CamelCase'
+  - key: readability-identifier-naming.ConstexprVariableNamePrefix
+    value: 'k'
+  - key: readability-identifier-naming.ConstexprVariableNameCase
+    value: 'CamelCase'
+  - key: readability-identifier-naming.ClassConstantNamePrefix
+    value: 'k'
+  - key: readability-identifier-naming.ClassConstantNameCase
+    value: 'CamelCase'
+  - key: readability-identifier-naming.EnumConstantNamePrefix
+    value: 'k'
+  - key: readability-identifier-naming.EnumConstantNameCase
+    value: 'CamelCase'
+  - key: readability-identifier-naming.NamespaceNameCase
+    value: 'lower_case'
 
 # Known-noisy checks excluded on purpose:
 #   bugprone-easily-swappable-parameters, modernize-use-trailing-return-type,

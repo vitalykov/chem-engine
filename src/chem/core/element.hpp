@@ -13,8 +13,8 @@ public:
   explicit Element(int atomic_number);
 
   std::string_view symbol() const noexcept;
-  int atomic_number() const noexcept;
-  double standard_weight() const noexcept;
+  int atomicNumber() const noexcept;
+  double standardWeight() const noexcept;
 
 private:
   // Non-owning view into function-local-static table storage; never freed

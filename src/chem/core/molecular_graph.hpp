@@ -8,7 +8,7 @@
 
 namespace chem {
 
-enum class BondOrder : std::uint8_t { Single, Double, Triple };
+enum class BondOrder : std::uint8_t { kSingle, kDouble, kTriple };
 
 struct Atom {
   Element element;
@@ -27,8 +27,8 @@ class MolecularGraph {
 public:
   MolecularGraph() = default;
 
-  std::ptrdiff_t add_atom(Atom atom);
-  void add_bond(std::ptrdiff_t a, std::ptrdiff_t b, BondOrder order);
+  std::ptrdiff_t addAtom(Atom atom);
+  void addBond(std::ptrdiff_t a, std::ptrdiff_t b, BondOrder order);
 
   [[nodiscard]] std::span<const Atom> atoms() const noexcept;
   [[nodiscard]] std::span<const Bond> bonds() const noexcept;

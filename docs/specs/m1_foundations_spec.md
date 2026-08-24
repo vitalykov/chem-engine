@@ -108,8 +108,8 @@ public:
   explicit Element(std::string_view symbol);
   explicit Element(int atomic_number);
   std::string_view symbol() const noexcept;
-  int atomic_number() const noexcept;
-  double standard_weight() const noexcept;  // u
+  int atomicNumber() const noexcept;
+  double standardWeight() const noexcept;  // u
 };
 }
 ```
@@ -138,12 +138,12 @@ emit (design.md §3.2, §8):
   implicit hydrogen count (`int implicit_h`, default 0), and explicit hydrogen
   count (`int explicit_h`, default 0).
 - FR-5b: A bond representation with order enum
-  `enum class BondOrder { Single, Double, Triple }`.
-- FR-5c: Mutation API `std::ptrdiff_t add_atom(Atom)` returning the atom index
-  and `void add_bond(std::ptrdiff_t a, std::ptrdiff_t b, BondOrder order)`
+  `enum class BondOrder { kSingle, kDouble, kTriple }`.
+- FR-5c: Mutation API `std::ptrdiff_t addAtom(Atom)` returning the atom index
+  and `void addBond(std::ptrdiff_t a, std::ptrdiff_t b, BondOrder order)`
   (signed index arithmetic per AGENTS.md); read access via contiguous views
   (`std::span<const Atom> atoms()`, `std::span<const Bond> bonds()`).
-- FR-5d: `add_bond` MUST debug-assert valid indices; the graph does not
+- FR-5d: `addBond` MUST debug-assert valid indices; the graph does not
   self-validate in release builds (setup-phase validation belongs to callers).
 
 ### ⏳ FR-6: Composition map
@@ -158,8 +158,8 @@ The composition (element → count) MUST be derivable from any graph:
 
 ### ⏳ FR-7: Molar mass
 
-A free function `double molar_mass(const MolecularGraph&)` MUST return the sum
-of `element.standard_weight() * count` over the composition, in g/mol. For
+A free function `double molarMass(const MolecularGraph&)` MUST return the sum
+of `element.standardWeight() * count` over the composition, in g/mol. For
 water the result MUST equal approximately 18.015 g/mol (within 0.001).
 
 ### ⏳ FR-8: Formula parser
@@ -169,7 +169,7 @@ water the result MUST equal approximately 18.015 g/mol (within 0.001).
 ```cpp
 namespace chem {
 // Throws ParseError on any invalid input.
-MolecularGraph parse_formula(std::string_view input);
+MolecularGraph parseFormula(std::string_view input);
 }
 ```
 
@@ -234,7 +234,7 @@ The doctest suite MUST cover:
 - FR-12c: Every rejection class in FR-9 with exception-type assertions
   (doctest `REQUIRE_THROWS_AS`) and message-content checks quoting the input.
 - FR-12d: Graph/composition/mass consistency: for each accepted test formula,
-  `molar_mass` recomputed independently matches, and hydrogen counting through
+  `molarMass` recomputed independently matches, and hydrogen counting through
   implicit/explicit fields sums correctly.
 - FR-12e: Determinism smoke test: parse the same formula twice and compare
   graphs atom-by-atom.
@@ -255,8 +255,9 @@ The doctest suite MUST cover:
 
 ## 6. Technical Constraints & Architecture Notes
 
-- Namespace `chem`; naming per AGENTS.md (`PascalCase` types, `snake_case`
-  functions/variables, `k`-prefixed constants).
+- Namespace `chem`; naming per AGENTS.md (`PascalCase` types, `camelCase`
+  functions, `snake_case` variables with `_`-suffixed members, `k`-prefixed
+  constants).
 - Parsers produce `MolecularGraph` and nothing else (hard rule 3) — even though
   the formula parser could trivially emit counts directly, it MUST construct a
   graph and derive the composition from it, exercising the M2 path.
@@ -274,10 +275,10 @@ New public headers and their key signatures:
 | Header | Interface |
 |---|---|
 | `core/errors.hpp` | `class ParseError : std::runtime_error`, `class ValidationError : std::runtime_error` |
-| `core/element.hpp` | `Element(std::string_view)`, `Element(int)`, `.symbol()`, `.atomic_number()`, `.standard_weight()` (flyweight value type) |
-| `core/molecular_graph.hpp` | `struct Atom`, `enum class BondOrder`, `class MolecularGraph` with `add_atom`, `add_bond`, `atoms()`, `bonds()` |
-| `core/composition.hpp` | `CompositionMap composition(const MolecularGraph&)`, `double molar_mass(const MolecularGraph&)` |
-| `parsing/formula_parser.hpp` | `MolecularGraph parse_formula(std::string_view)` |
+| `core/element.hpp` | `Element(std::string_view)`, `Element(int)`, `.symbol()`, `.atomicNumber()`, `.standardWeight()` (flyweight value type) |
+| `core/molecular_graph.hpp` | `struct Atom`, `enum class BondOrder`, `class MolecularGraph` with `addAtom`, `addBond`, `atoms()`, `bonds()` |
+| `core/composition.hpp` | `CompositionMap composition(const MolecularGraph&)`, `double molarMass(const MolecularGraph&)` |
+| `parsing/formula_parser.hpp` | `MolecularGraph parseFormula(std::string_view)` |
 
 Data file: `data/elements.csv`, header row
 `symbol,atomic_number,name,standard_atomic_weight`, 118 rows, UTF-8, LF endings.

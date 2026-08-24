@@ -26,10 +26,14 @@ Always build and run tests after changes. New code requires new tests.
 
 ## Code style
 
-- Types, concepts: `PascalCase` (`MolecularGraph`, `KineticSystem`)
-- Functions, variables: `snake_case` (`canonical_form`, `step_size`)
-- Constants: `k` prefix + PascalCase (`kDefaultDt`)
-- Namespace: `chem`
+- Types, concepts, template parameters: `PascalCase` (`MolecularGraph`, `KineticSystem`)
+- Functions, methods: `camelCase` (`canonicalForm`, `addAtom`)
+- Variables, parameters: `snake_case` (`step_size`)
+- Data members: `snake_case`; class members take a `_` suffix (`atoms_`),
+  struct fields do not (`bond.order`). Internal helpers live in `.cpp`
+  anonymous namespaces or `chem::detail`.
+- Constants, enum values: `k` prefix + PascalCase (`kDefaultDt`)
+- Namespace: `chem`; namespaces are lowercase and not nested
 - Headers use `#pragma once`; one class per header where practical
 - Include order: own header first, then project headers, then std
 - Use `std::string_view` for non-owning string parameters

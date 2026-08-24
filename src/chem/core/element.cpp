@@ -30,7 +30,7 @@ struct ElementTable {
   std::unordered_map<std::string_view, std::size_t> by_symbol;
 };
 
-std::vector<std::string_view> split_fields(std::string_view line, char delimiter) {
+std::vector<std::string_view> splitFields(std::string_view line, char delimiter) {
   std::vector<std::string_view> fields;
   std::size_t start = 0;
   while (true) {
@@ -44,7 +44,7 @@ std::vector<std::string_view> split_fields(std::string_view line, char delimiter
   }
 }
 
-template <typename T> T parse_numeric_field(std::string_view field) {
+template <typename T> T parseNumericField(std::string_view field) {
   if (field.empty()) {
     throw std::runtime_error("elements.csv: invalid numeric field ''");
   }
@@ -58,7 +58,7 @@ template <typename T> T parse_numeric_field(std::string_view field) {
   return value;
 }
 
-ElementTable load_element_table() {
+ElementTable loadElementTable() {
   ElementTable table;
 
   constexpr const char* kCsvPath = CHEM_ELEMENTS_CSV_PATH;
@@ -92,7 +92,7 @@ ElementTable load_element_table() {
       cursor = newline + 1;
     }
 
-    const std::vector<std::string_view> fields = split_fields(line, ',');
+    const std::vector<std::string_view> fields = splitFields(line, ',');
     if (fields.size() != 4 || fields[0].empty() || fields[2].empty()) {
       throw std::runtime_error("elements.csv: malformed row '" + std::string(line) + "'");
     }
@@ -100,8 +100,8 @@ ElementTable load_element_table() {
       throw std::runtime_error("elements.csv: malformed row '" + std::string(line) + "'");
     }
 
-    const int atomic_number = parse_numeric_field<int>(fields[1]);
-    const auto weight = parse_numeric_field<double>(fields[3]);
+    const int atomic_number = parseNumericField<int>(fields[1]);
+    const auto weight = parseNumericField<double>(fields[3]);
     if (atomic_number != static_cast<int>(table.records.size()) + 1) {
       throw std::runtime_error("elements.csv: non-sequential atomic number '" +
                                std::string(fields[1]) + "'");
@@ -124,15 +124,15 @@ ElementTable load_element_table() {
   return table;
 }
 
-const ElementTable& element_table() {
-  static const ElementTable table = load_element_table();
+const ElementTable& elementTable() {
+  static const ElementTable table = loadElementTable();
   return table;
 }
 
 } // namespace
 
 Element::Element(std::string_view symbol) {
-  const ElementTable& table = element_table();
+  const ElementTable& table = elementTable();
   const auto it = table.by_symbol.find(symbol);
   if (it == table.by_symbol.end()) {
     throw ParseError("unknown element symbol \"" + std::string(symbol) + "\"");
@@ -141,7 +141,7 @@ Element::Element(std::string_view symbol) {
 }
 
 Element::Element(int atomic_number) {
-  const ElementTable& table = element_table();
+  const ElementTable& table = elementTable();
   if (atomic_number < 1 || atomic_number > static_cast<int>(table.records.size())) {
     throw ParseError("unknown element atomic number " + std::to_string(atomic_number));
   }
@@ -150,8 +150,8 @@ Element::Element(int atomic_number) {
 
 std::string_view Element::symbol() const noexcept { return record_->symbol; }
 
-int Element::atomic_number() const noexcept { return record_->atomic_number; }
+int Element::atomicNumber() const noexcept { return record_->atomic_number; }
 
-double Element::standard_weight() const noexcept { return record_->standard_weight; }
+double Element::standardWeight() const noexcept { return record_->standard_weight; }
 
 } // namespace chem
