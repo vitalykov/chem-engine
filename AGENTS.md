@@ -60,9 +60,9 @@ Always build and run tests after changes. New code requires new tests.
   range-for over index loops. Use `std::ssize()` when a size participates in
   signed comparison or arithmetic; `.size()` only where the target type is
   genuinely `std::size_t`.
-- Build requirements: `-Wall -Wextra -Wpedantic -Wconversion -Wshadow`; new
-  warnings are errors. Debug/test builds run under ASan+UBSan; release builds
-  carry no instrumentation overhead.
+- Build requirements: `-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion
+  -Wshadow`; new warnings are errors. Debug/test builds run under ASan+UBSan;
+  release builds carry no instrumentation overhead.
 
 ## Error handling contract
 

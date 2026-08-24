@@ -71,8 +71,11 @@ The project MUST provide a CMake configuration (minimum 3.28) defining:
   `CXX_STANDARD_REQUIRED ON`), compiling everything under `src/chem/`.
 - FR-1b: A test-runner executable linking `chem` and doctest, registering all
   test files with CTest via `add_test` (or `doctest_discover_tests` equivalent).
-- FR-1c: Compiler warnings `-Wall -Wextra -Wpedantic` enabled for both targets;
-  builds MUST be warning-clean.
+- FR-1c: Compiler warnings `-Wall -Wextra -Wpedantic -Wconversion
+  -Wsign-conversion -Wshadow` enabled for both targets, with warnings treated
+  as errors; builds MUST be warning-clean.
+- FR-1d: Debug/test builds MUST compile with ASan+UBSan instrumentation;
+  release builds MUST carry no sanitizer overhead.
 
 ### ⏳ FR-2: doctest wiring
 
@@ -114,7 +117,9 @@ public:
 - FR-4a: Instances MUST be flyweight handles: each object holds only a pointer
   into the shared, once-loaded table; copying never duplicates data and is as
   cheap as copying a pointer. Construction performs one O(1) lookup; hot paths
-  hoist constructed instances out of loops.
+  hoist constructed instances out of loops. The internal pointer is a
+  non-owning view into function-local-static storage (justified bare `T*` per
+  AGENTS.md); it MUST never be dereferenced-owned or freed.
 
 - FR-4b: Lookup MUST be case-sensitive: `"Co"` resolves to cobalt, `"CO"` is an
   error.
@@ -134,10 +139,10 @@ emit (design.md §3.2, §8):
   count (`int explicit_h`, default 0).
 - FR-5b: A bond representation with order enum
   `enum class BondOrder { Single, Double, Triple }`.
-- FR-5c: Mutation API `std::size_t add_atom(Atom)` returning the atom index and
-  `void add_bond(std::size_t a, std::size_t b, BondOrder order)`; read access
-  via contiguous views (`std::span<const Atom> atoms()`,
-  `std::span<const Bond> bonds()`).
+- FR-5c: Mutation API `std::ptrdiff_t add_atom(Atom)` returning the atom index
+  and `void add_bond(std::ptrdiff_t a, std::ptrdiff_t b, BondOrder order)`
+  (signed index arithmetic per AGENTS.md); read access via contiguous views
+  (`std::span<const Atom> atoms()`, `std::span<const Bond> bonds()`).
 - FR-5d: `add_bond` MUST debug-assert valid indices; the graph does not
   self-validate in release builds (setup-phase validation belongs to callers).
 
@@ -243,6 +248,10 @@ The doctest suite MUST cover:
 - **Testability**: every module reachable from tests via public headers only;
   no test-only backdoors in library code.
 - **Portability**: builds with GCC and Clang in C++20 mode.
+- **Safety**: RAII everywhere, no manual `new`/`delete`, ownership via value
+  members or containers, non-owning access via references/`std::span`/
+  `std::string_view`, named casts only (AGENTS.md "Safety and resource
+  management"); debug/test runs verified under ASan+UBSan.
 
 ## 6. Technical Constraints & Architecture Notes
 
@@ -296,9 +305,13 @@ its position where practical.
 
 - [ ] All functional requirements FR-1 … FR-12 satisfied
 - [ ] `cmake -B build -S .` configures cleanly; FetchContent pins doctest
-- [ ] `cmake --build build --parallel` compiles with no warnings under
-      `-Wall -Wextra -Wpedantic`
-- [ ] `ctest --test-dir build --output-on-failure` passes all suites
+- [ ] `cmake --build build --parallel` compiles warning-clean under
+      `-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow` with
+      warnings as errors
+- [ ] `ctest --test-dir build --output-on-failure` passes all suites, with the
+      test build running under ASan+UBSan (FR-1d)
+- [ ] Touched sources formatted via `clang-format -i`; `clang-tidy` reports no
+      findings on changed files
 - [ ] Tests exist for: element lookups + error paths, parser accept/reject
       classes, composition aggregation, molar mass values, determinism
 - [ ] `data/elements.csv` contains exactly 118 rows; spot-checked weights match
