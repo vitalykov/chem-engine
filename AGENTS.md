@@ -36,6 +36,33 @@ Always build and run tests after changes. New code requires new tests.
 - No comments unless something is genuinely non-obvious. The design rationale
   lives in `docs/design.md`, not inline.
 - No emojis anywhere (code, docs, commits)
+- Formatting is enforced by `.clang-format` (LLVM-based); run
+  `clang-format -i <files>` on touched files instead of hand-styling
+
+## Safety and resource management
+
+- RAII everywhere: every resource (memory, files, handles) is owned by a type
+  whose destructor releases it. No manual `new`/`delete`, no two-phase init
+  that can leak between phases. Constructors establish full validity;
+  destructors never throw.
+- Ownership is expressed by value members, containers, or `std::unique_ptr`.
+  Never own through raw pointers; `std::shared_ptr` requires justification.
+- Non-owning access uses references (non-optional parameters), `std::span`
+  (arrays), or `std::string_view` (strings). A bare `T*` needs a comment
+  explaining why.
+- No C-style casts. Use named casts (`static_cast`, ...);
+  `reinterpret_cast`/`const_cast` are last resorts requiring justification.
+- Integer types: fixed-width (`std::int64_t`, `std::uint32_t`, ...) whenever
+  range, overflow behavior, or on-disk layout matters; plain `int` only for
+  small counts, flags, and loop-local arithmetic. Never `short`/`long` or
+  unsigned variants of them.
+- Indices and sizes in arithmetic are signed (`std::ptrdiff_t`); prefer
+  range-for over index loops. Use `std::ssize()` when a size participates in
+  signed comparison or arithmetic; `.size()` only where the target type is
+  genuinely `std::size_t`.
+- Build requirements: `-Wall -Wextra -Wpedantic -Wconversion -Wshadow`; new
+  warnings are errors. Debug/test builds run under ASan+UBSan; release builds
+  carry no instrumentation overhead.
 
 ## Error handling contract
 
@@ -127,3 +154,4 @@ Before finishing any task:
 3. If parsing/canonicalization changed: golden corpus and round-trip tests
    specifically pass unchanged
 4. No new dependencies in CMakeLists.txt
+5. `clang-tidy` reports no new findings on changed files (config: `.clang-tidy`)

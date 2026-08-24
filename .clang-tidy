@@ -1,0 +1,26 @@
+# Mirrors the "Safety and resource management" section of AGENTS.md.
+Checks: >
+  -*,
+  bugprone-*,
+  performance-*,
+  modernize-*,
+  cppcoreguidelines-pro-type-cstyle-cast,
+  cppcoreguidelines-pro-type-static-cast-downcast,
+  cppcoreguidelines-slicing,
+  misc-new-delete-overloads,
+  readability-container-size-empty,
+  readability-implicit-bool-conversion,
+  readability-inconsistent-declaration-parameter-name,
+  readability-named-parameter
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*'
+CheckOptions:
+  - key: readability-implicit-bool-conversion.AllowPointerConditions
+    value: 'false'
+  - key: readability-braces-around-statements.ShortStatementLines
+    value: '0'
+
+# Known-noisy checks excluded on purpose:
+#   bugprone-easily-swappable-parameters, modernize-use-trailing-return-type,
+#   readability-identifier-length, modernize-use-nodiscard (applied selectively
+#   by review instead).
