@@ -54,7 +54,9 @@ names and semantics are redesigned.
 ### 3.1 Element
 
 Static access to periodic table data: symbol, atomic number, precise atomic
-mass. Loaded once from bundled data (see §8); no user-facing constructor.
+mass. Loaded once from bundled data (see §8). `Element` is a lightweight
+flyweight value type constructible from a symbol or atomic number; instances
+hold only a view into the shared table, so copying never duplicates data.
 
 ### 3.2 Molecule
 
