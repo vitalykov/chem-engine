@@ -150,8 +150,8 @@ emit (design.md §3.2, §8):
 
 The composition (element → count) MUST be derivable from any graph:
 
-- FR-6a: A free function `chem::composition_map composition(const MolecularGraph&)`
-  where `composition_map` maps atomic numbers to total atom counts, including
+- FR-6a: A free function `chem::CompositionMap composition(const MolecularGraph&)`
+  where `CompositionMap` maps atomic numbers to total atom counts, including
   implicit and explicit hydrogens of each atom.
 - FR-6b: Counts MUST aggregate multiplicities from repeated symbols and
   parenthesized groups correctly (no double counting; see proto bug fixed).
@@ -276,7 +276,7 @@ New public headers and their key signatures:
 | `core/errors.hpp` | `class ParseError : std::runtime_error`, `class ValidationError : std::runtime_error` |
 | `core/element.hpp` | `Element(std::string_view)`, `Element(int)`, `.symbol()`, `.atomic_number()`, `.standard_weight()` (flyweight value type) |
 | `core/molecular_graph.hpp` | `struct Atom`, `enum class BondOrder`, `class MolecularGraph` with `add_atom`, `add_bond`, `atoms()`, `bonds()` |
-| `core/composition.hpp` | `composition_map composition(const MolecularGraph&)`, `double molar_mass(const MolecularGraph&)` |
+| `core/composition.hpp` | `CompositionMap composition(const MolecularGraph&)`, `double molar_mass(const MolecularGraph&)` |
 | `parsing/formula_parser.hpp` | `MolecularGraph parse_formula(std::string_view)` |
 
 Data file: `data/elements.csv`, header row
