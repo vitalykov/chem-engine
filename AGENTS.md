@@ -159,3 +159,4 @@ Before finishing any task:
    specifically pass unchanged
 4. No new dependencies in CMakeLists.txt
 5. `clang-tidy` reports no new findings on changed files (config: `.clang-tidy`)
+6. If public headers changed: README usage section updated
