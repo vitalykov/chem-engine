@@ -20,10 +20,6 @@ Primary goals, in priority order:
    enough for interactive use, but never at the cost of correctness.
 4. **Embeddability** — a clean C++ library with no heavyweight dependencies,
    usable as a component inside larger applications (games, tools, education).
-5. **Database readiness** — compounds and reactions are serializable entities
-   identified by stable IDs, designed from day one to back a compound/reaction
-   database.
-
 Non-goals for v1:
 
 - Quantum chemistry, molecular mechanics, any spatial/geometry modeling.
@@ -141,14 +137,14 @@ Molecule("[OH2]")` holds because both normalize to the same canonical form.
 ### 4.2 Canonicalization is a frozen, versioned specification
 
 There is no universal canonical SMILES: RDKit's differs from Open Babel's.
-Ours is defined by our implementation and becomes part of our schema — the
-future database keys on it. Therefore:
+Ours is defined by our implementation and serves as the engine's species
+identifier throughout. Therefore:
 
 - The algorithm is a pure function `(MolecularGraph) -> std::string`.
 - Its output is locked by **golden-file tests**: a committed corpus of
   molecules with their expected canonical strings, run on every build.
 - The spec carries a version number. Any change to canonicalization output
-  requires a migration story for stored IDs before merging.
+  requires a formal version bump and a migration story before merging.
 - Invariant tested on the whole corpus: `parse(canonical(m)) == m`
   (round-trip fidelity). This is what makes IDs stable forever.
 
@@ -265,25 +261,7 @@ Test categories:
 5. **Error-path tests** — malformed formulas/SMILES raise the right
    exception type with useful messages.
 
-## 10. Persistence (database forward-compatibility)
-
-The engine is built so a compound/reaction database can be added later
-without schema surgery:
-
-- `Molecule` and `Reaction` serialize to a stable text representation
-  (canonical-SMILES-keyed records; reactions reference participants by ID).
-- Canonicalization spec version is stamped into serialized data.
-- The planned molecule drawer targets the same `MolecularGraph` type the
-  parsers emit, so drawn molecules enter the pipeline unchanged.
-
-Schema sketch (for the future DB, not v1):
-
-```
-molecules(id: canonical_smiles, spec_version, composition_json, mol_mass, source_format)
-reactions(id, stoichiometry_json /* id -> coeff */, orders_json, arrhenius_A, arrhenius_Ea)
-```
-
-## 11. Roadmap
+## 10. Roadmap
 
 - **M1 — Foundations**: CMake skeleton, doctest wiring, full periodic table,
   `Element`, molecular graph, formula parser.
@@ -293,5 +271,5 @@ reactions(id, stoichiometry_json /* id -> coeff */, orders_json, arrhenius_A, ar
   `KineticSystem`, `Vessel`, `FixedStepRK4`, analytic-solution tests.
 - **M4 — Completeness**: `AdaptiveRKF45`, Arrhenius `k(T)` and vessel
   temperature, serialization, documentation of the SMILES dialect contract.
-- **Beyond**: stiff solver (BDF), thermodynamics (heat of reaction), compound/
-  reaction database, molecule drawer feeding `MolecularGraph`.
+- **Beyond**: stiff solver (BDF), thermodynamics (heat of reaction),
+  molecule drawer feeding `MolecularGraph`.

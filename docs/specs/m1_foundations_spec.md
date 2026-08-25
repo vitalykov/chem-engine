@@ -6,12 +6,12 @@
 
 **Date**: 2026-08-24
 
-**Related**: docs/design.md §2 (key decisions), §3.1–3.2 (Element, molecule graph), §7 (error handling), §8 (architecture), §9 (testing strategy), §11 (roadmap, milestone M1)
+**Related**: docs/design.md §2 (key decisions), §3.1–3.2 (Element, molecule graph), §7 (error handling), §8 (architecture), §9 (testing strategy), §10 (roadmap, milestone M1)
 
 ## 1. Goal / Problem Statement
 
 The repository on `main` is an empty slate — no build system, no sources. Milestone
-M1 (docs/design.md §11) delivers the foundation every later milestone parses into:
+M1 (docs/design.md §10) delivers the foundation every later milestone parses into:
 a CMake skeleton with doctest wired up, the complete periodic table, the
 `Element` access layer, the `MolecularGraph` type, and the formula parser.
 
