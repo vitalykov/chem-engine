@@ -38,6 +38,7 @@ target_sources(chem
     src/chem/core/composition.cpp
     src/chem/parsing/formula_parser.cpp
     src/chem/parsing/smiles_parser.cpp
+    src/chem/canonical/canonical_smiles.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS src
@@ -48,6 +49,7 @@ target_sources(chem
       src/chem/core/composition.hpp
       src/chem/parsing/formula_parser.hpp
       src/chem/parsing/smiles_parser.hpp
+      src/chem/canonical/canonical_smiles.hpp
 )
 
 target_compile_features(chem PUBLIC cxx_std_20)
@@ -61,6 +63,8 @@ target_compile_definitions(chem PRIVATE
   CHEM_ELEMENTS_CSV_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/elements.csv"
 )
 
+configure_file(data/golden/corpus.csv data/golden/corpus.csv COPYONLY)
+
 chem_apply_strict_warnings(chem)
 chem_apply_sanitizers(chem)
 
@@ -70,6 +74,8 @@ add_executable(test-runner
   tests/core/molecular_graph_test.cpp
   tests/parsing/formula_parser_test.cpp
   tests/parsing/smiles_parser_test.cpp
+  tests/canonical/canonical_smiles_test.cpp
+  tests/canonical/golden_corpus_test.cpp
 )
 
 target_compile_features(test-runner PRIVATE cxx_std_20)
@@ -79,6 +85,10 @@ set_target_properties(test-runner PROPERTIES
 )
 
 target_link_libraries(test-runner PRIVATE chem doctest::doctest)
+
+target_compile_definitions(test-runner PRIVATE
+  CHEM_GOLDEN_CORPUS_CSV_PATH="${CMAKE_CURRENT_BINARY_DIR}/data/golden/corpus.csv"
+)
 
 chem_apply_strict_warnings(test-runner)
 chem_apply_sanitizers(test-runner)

@@ -9,8 +9,33 @@ requires the criteria in AGENTS.md ("Versioning").
 
 ## [Unreleased]
 
-Canonicalization spec: v1 (`docs/design.md` §4.2-4.3), unchanged from the
-previous release — the specification is defined but not yet implemented.
+Canonicalization spec: v1 (`docs/design.md` §4.2-4.3) — now implemented and
+frozen by a golden corpus. Any change to canonical SMILES output requires a
+formal spec-version bump.
+
+### Added
+
+- `chem::canonicalSmiles(const MolecularGraph&)` and
+  `chem::kCanonicalSpecVersion` (== 1) in `src/chem/canonical/`: a pure,
+  deterministic, automorphism-invariant canonical SMILES writer. Weisfeiler-
+  Lehman refinement over (isotope, atomic_number, charge, total_h, degree)
+  invariants, within-class rank permutations minimized lexicographically, DFS
+  emission with branch/ring-closure rules. Empty graphs throw
+  `ValidationError`; more than 99 simultaneous ring closures throw
+  `ValidationError`.
+- Golden corpus `data/golden/corpus.csv` (30 curated entries) with build
+  wiring mirroring `data/elements.csv`; `tests/canonical/golden_corpus_test.cpp`
+  locks every entry's canonical string, asserts the round-trip fixed point
+  (composition-preserving for connected entries, component-wise for
+  disconnected forms), and runs a byte-determinism smoke over the whole corpus.
+- `tests/canonical/canonical_smiles_test.cpp` covering emission rules,
+  order-independence, equivalence classes (`O`/`[OH2]`, benzene kekule
+  rotations), disconnected graphs, the >99-closure guard, and `%nn` output.
+
+### Changed
+
+- README usage section gains a `canonicalSmiles` example and the canonical
+  module appears in the layout table.
 
 ## [0.2.0] - 2026-08-27
 

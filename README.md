@@ -5,10 +5,10 @@ library in C++20.
 
 Status: early development (0.x). The current milestone provides element data,
 molecular graphs, composition and molar-mass computation, a Hill-formula
-parser, and a SMILES parser covering the v1 dialect subset (atoms, bonds,
-branches, ring closures, charges, isotopes). Canonical SMILES output and
-numerical integration arrive in later milestones; see `docs/design.md` for
-the full architecture.
+parser, a SMILES parser covering the v1 dialect subset (atoms, bonds,
+branches, ring closures, charges, isotopes), and a frozen canonical SMILES
+canonicalizer with a golden corpus. Numerical integration arrives in a later
+milestone; see `docs/design.md` for the full architecture.
 
 ## Build and test
 
@@ -84,6 +84,33 @@ int main() {
 Because every parser emits the same graph type, `parseSmiles` and
 `parseFormula` compose with the same composition/molar-mass helpers.
 
+## Canonical SMILES
+
+`chem::canonicalSmiles` turns any `MolecularGraph` into a deterministic,
+automorphism-invariant identifier string (spec version
+`chem::kCanonicalSpecVersion`). Equivalent spellings collapse to one ID, so
+`Molecule("O") == Molecule("[OH2]")` holds once the `Molecule` type lands; for
+now the canonicalizer is a pure graph->string function:
+
+```cpp
+#include <iostream>
+
+#include "chem/canonical/canonical_smiles.hpp"
+#include "chem/parsing/smiles_parser.hpp"
+
+int main() {
+  // Two kekule spellings of benzene canonicalize identically.
+  std::cout << chem::canonicalSmiles(chem::parseSmiles("C1=CC=CC=C1")) << "\n";  // C1=CC=CC=C1
+  std::cout << chem::canonicalSmiles(chem::parseSmiles("C=1C=CC=CC=1")) << "\n"; // C1=CC=CC=C1
+  // Equivalent bracket/bare spellings normalize.
+  std::cout << chem::canonicalSmiles(chem::parseSmiles("[OH2]")) << "\n";        // O
+}
+```
+
+The canonicalization specification is frozen: its output is locked by a golden
+corpus (`data/golden/corpus.csv`) run on every build, and any change to the
+output requires a formal spec-version bump (`docs/design.md` §4.2).
+
 Elements are flyweight handles into a built-in periodic table, looked up once
 by symbol or atomic number:
 
@@ -126,12 +153,13 @@ definition (`CHEM_ELEMENTS_CSV_PATH`).
 |---|---|
 | `src/chem/core/` | Elements, molecular graphs, composition, error types |
 | `src/chem/parsing/` | Input-format parsers producing `MolecularGraph` (Hill formula, SMILES) |
+| `src/chem/canonical/` | Canonical SMILES writer (frozen, versioned spec) |
 | `tests/` | doctest suites mirroring `src/chem/` |
-| `data/` | Periodic table data (`elements.csv`) |
+| `data/` | Periodic table (`elements.csv`), golden canonical corpus (`golden/corpus.csv`) |
 | `docs/` | Architecture and per-milestone specifications |
 
 Architecture and contracts live in `docs/design.md`; the current milestone
-contract is `docs/specs/m2a_smiles_parser_spec.md`.
+contract is `docs/specs/m2b_canonicalization_spec.md`.
 
 ## License
 
