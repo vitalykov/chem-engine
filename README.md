@@ -4,9 +4,11 @@ Chemical reactions simulation engine — a correctness-first kinetics simulation
 library in C++20.
 
 Status: early development (0.x). The current milestone provides element data,
-molecular graphs, composition and molar-mass computation, and a Hill-formula
-parser. Canonical SMILES output and numerical integration arrive in later
-milestones; see `docs/design.md` for the full architecture.
+molecular graphs, composition and molar-mass computation, a Hill-formula
+parser, and a SMILES parser covering the v1 dialect subset (atoms, bonds,
+branches, ring closures, charges, isotopes). Canonical SMILES output and
+numerical integration arrive in later milestones; see `docs/design.md` for
+the full architecture.
 
 ## Build and test
 
@@ -52,6 +54,36 @@ Invalid input is rejected loudly — unsupported syntax throws `chem::ParseError
 with a message quoting the offending token and position; nothing is silently
 ignored.
 
+## SMILES
+
+A connected SMILES molecule parses into a bonded `MolecularGraph` with the
+v1 dialect subset — bare organic atoms (`B C N O P S F Cl Br I`), brackets
+with all 118 elements, single/double/triple bonds, branches, ring closures
+(including `%nn`), formal charges, and isotope labels. Unsupported constructs
+(aromatic atoms, stereochemistry, disconnected components, wildcards,
+reaction SMILES) throw `chem::ParseError`:
+
+```cpp
+#include <iostream>
+
+#include "chem/core/errors.hpp"
+#include "chem/parsing/smiles_parser.hpp"
+
+int main() {
+  try {
+    const chem::MolecularGraph acetic = chem::parseSmiles("CC(=O)O");
+    // 4 atoms, 3 bonds; carbon 0 has implicit_h 3, the carbonyl C has 0,
+    // hydroxyl O has implicit_h 1.
+    std::cout << "atoms: " << acetic.atoms().size() << "\n";  // 4
+  } catch (const chem::ParseError& e) {
+    std::cerr << "invalid SMILES: " << e.what() << "\n";
+  }
+}
+```
+
+Because every parser emits the same graph type, `parseSmiles` and
+`parseFormula` compose with the same composition/molar-mass helpers.
+
 Elements are flyweight handles into a built-in periodic table, looked up once
 by symbol or atomic number:
 
@@ -93,13 +125,13 @@ definition (`CHEM_ELEMENTS_CSV_PATH`).
 | Path | Contents |
 |---|---|
 | `src/chem/core/` | Elements, molecular graphs, composition, error types |
-| `src/chem/parsing/` | Input-format parsers producing `MolecularGraph` |
+| `src/chem/parsing/` | Input-format parsers producing `MolecularGraph` (Hill formula, SMILES) |
 | `tests/` | doctest suites mirroring `src/chem/` |
 | `data/` | Periodic table data (`elements.csv`) |
 | `docs/` | Architecture and per-milestone specifications |
 
 Architecture and contracts live in `docs/design.md`; the current milestone
-contract is `docs/specs/m1_foundations_spec.md`.
+contract is `docs/specs/m2a_smiles_parser_spec.md`.
 
 ## License
 

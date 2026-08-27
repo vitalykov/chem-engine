@@ -157,6 +157,21 @@ aromaticity perception (use kekulé alternating bonds), wildcards, reaction
 SMILES. Encountering unsupported syntax is a loud `ParseError`, never silent
 acceptance — silent drops could collapse distinct molecules into one ID.
 
+Parser conformance is grounded in OpenSMILES
+(<https://opensmiles.org/opensmiles.html>) and the Daylight SMILES theory
+manual (<https://www.daylight.com/dayhtml/doc/theory/theory.smiles.html>),
+which confirm the organic subset, lowest-normal-valence model, ring-closure
+semantics (`%nn`, numeric rnum matching so `%01` == `1`, rnum re-use only
+after the pair closes), and bracket field order (isotope, symbol, H-count,
+charge). Three deliberate tightenings beyond those references, per the m2a
+spec (FR-3b/FR-7a and its §8 edge table):
+
+1. Charge magnitude is limited to 9 (the references permit ±15).
+2. The repeated-sign charge form is limited to `++`/`--`; `[Fe+++]` is an
+   error (the references treat it as `+3`).
+3. Over-valent bare atoms (`CO(C)C`) are errors (OpenSMILES would fall back
+   to zero implicit hydrogen).
+
 ### 4.4 Documented contract for users
 
 Three short guarantees published wherever the engine is documented:

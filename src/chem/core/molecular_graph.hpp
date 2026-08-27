@@ -15,6 +15,7 @@ struct Atom {
   int charge = 0;
   int implicit_h = 0;
   int explicit_h = 0;
+  int isotope = 0; // mass number; 0 = unspecified
 };
 
 struct Bond {

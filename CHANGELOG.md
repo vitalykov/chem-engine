@@ -9,6 +9,21 @@ requires the criteria in AGENTS.md ("Versioning").
 
 ## [Unreleased]
 
+Canonicalization spec: v1 (`docs/design.md` §4.2-4.3), unchanged from the
+previous release — the specification is defined but not yet implemented.
+
+### Added
+
+- SMILES parser (`chem::parseSmiles`) covering the v1 dialect subset: bare
+  organic atoms (`B C N O P S F Cl Br I`), bracketed atoms (all 118 elements)
+  with isotope labels and formal charges, single/double/triple bonds,
+  branches, ring closures (single-digit and `%nn`), and Daylight-style
+  implicit-hydrogen valence inference. All unsupported syntax (aromatic
+  atoms, stereochemistry, disconnected components, wildcards, reaction
+  SMILES) is rejected loudly with offset-quoting `ParseError`s.
+- `Atom::isotope` field (mass number; 0 = unspecified), defaulting to 0 so
+  existing formula-parser output and M1 behavior are unchanged.
+
 ## [0.1.0] - 2026-08-25
 
 First release: M1 foundations — element data, molecular graphs,

@@ -37,6 +37,7 @@ target_sources(chem
     src/chem/core/molecular_graph.cpp
     src/chem/core/composition.cpp
     src/chem/parsing/formula_parser.cpp
+    src/chem/parsing/smiles_parser.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS src
@@ -46,6 +47,7 @@ target_sources(chem
       src/chem/core/molecular_graph.hpp
       src/chem/core/composition.hpp
       src/chem/parsing/formula_parser.hpp
+      src/chem/parsing/smiles_parser.hpp
 )
 
 target_compile_features(chem PUBLIC cxx_std_20)
@@ -67,6 +69,7 @@ add_executable(test-runner
   tests/core/element_test.cpp
   tests/core/molecular_graph_test.cpp
   tests/parsing/formula_parser_test.cpp
+  tests/parsing/smiles_parser_test.cpp
 )
 
 target_compile_features(test-runner PRIVATE cxx_std_20)
