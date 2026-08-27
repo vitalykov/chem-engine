@@ -12,7 +12,6 @@
 
 #include <array>
 #include <cstddef>
-#include <iterator>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -133,8 +132,8 @@ int readDigits(Cursor& cursor) {
     ++cursor.pos;
   }
   int value = 0;
-  for (std::size_t i = start; i < cursor.pos; ++i) {
-    value = value * 10 + (cursor.input[i] - '0');
+  for (const char c : cursor.input.substr(start, cursor.pos - start)) {
+    value = value * 10 + (c - '0');
   }
   return value;
 }
@@ -518,15 +517,14 @@ MolecularGraph parseSmiles(std::string_view input) {
   parser.parseChain(-1, std::nullopt);
 
   // FR-10g: any still-open ring digit at end of input is an error.
-  for (std::size_t i = 0; i < kRingSlotCount; ++i) {
+  for (std::size_t i = 0; i < parser.rings.size(); ++i) {
     if (parser.rings[i].open) {
       throw ParseError(errorAt("unclosed ring digit " + std::to_string(i), input, input.size()));
     }
   }
 
   // Part F — assign implicit hydrogens after full traversal (FR-7b).
-  const std::ptrdiff_t atom_count = std::ssize(parser.graph.atoms());
-  std::vector<int> bond_sums(static_cast<std::size_t>(atom_count), 0);
+  std::vector<int> bond_sums(parser.graph.atoms().size(), 0);
   for (const Bond& bond : parser.graph.bonds()) {
     const int v = bondOrderValue(bond.order);
     bond_sums[static_cast<std::size_t>(bond.a)] += v;
@@ -534,11 +532,11 @@ MolecularGraph parseSmiles(std::string_view input) {
   }
 
   MolecularGraph result;
-  for (std::ptrdiff_t i = 0; i < atom_count; ++i) {
-    Atom atom = parser.graph.atoms()[static_cast<std::size_t>(i)];
-    if (parser.bare_organic[static_cast<std::size_t>(i)]) {
+  for (std::size_t i = 0; i < parser.graph.atoms().size(); ++i) {
+    Atom atom = parser.graph.atoms()[i];
+    if (parser.bare_organic[i]) {
       const int atomic = atom.element.atomicNumber();
-      const int b = bond_sums[static_cast<std::size_t>(i)];
+      const int b = bond_sums[i];
       const int v = selectValence(atomic, b);
       if (v < 0) {
         throw ParseError(errorAt("over-valent atom (element " + std::to_string(atomic) +

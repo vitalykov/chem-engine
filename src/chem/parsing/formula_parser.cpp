@@ -78,8 +78,8 @@ int readCount(Cursor& cursor) {
     throw ParseError(errorAt("count too large", cursor.input, start));
   }
   int value = 0;
-  for (std::size_t i = start; i < cursor.pos; ++i) {
-    value = value * 10 + (cursor.input[i] - '0');
+  for (const char c : cursor.input.substr(start, cursor.pos - start)) {
+    value = value * 10 + (c - '0');
   }
   return value;
 }

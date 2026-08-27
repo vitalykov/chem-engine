@@ -258,8 +258,8 @@ TEST_CASE("Tetrafluoromethane 'C(F)(F)(F)F' — F implicit_h 0 each") {
   const MolecularGraph g = chem::parseSmiles("C(F)(F)(F)F");
   REQUIRE(g.atoms().size() == 5);
   CHECK(g.atoms()[0].implicit_h == 0); // C bond sum 4
-  for (std::size_t i = 1; i < 5; ++i) {
-    CHECK(g.atoms()[i].implicit_h == 0); // F bond sum 1, valence 1
+  for (const Atom& f : g.atoms().subspan(1)) {
+    CHECK(f.implicit_h == 0); // F bond sum 1, valence 1
   }
 }
 

@@ -35,7 +35,7 @@ Always build and run tests after changes. New code requires new tests.
 - Constants, enum values: `k` prefix + PascalCase (`kDefaultDt`)
 - Namespace: `chem`; namespaces are lowercase and not nested
 - Headers use `#pragma once`; one class per header where practical
-- Include order: own header first, then project headers, then std
+- Include order: own header first, then std, then project
 - Use `std::string_view` for non-owning string parameters
 - No comments unless something is genuinely non-obvious. The design rationale
   lives in `docs/design.md`, not inline.
