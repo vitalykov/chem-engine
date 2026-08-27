@@ -12,8 +12,20 @@ requires the criteria in AGENTS.md ("Versioning").
 Canonicalization spec: v1 (`docs/design.md` §4.2-4.3), unchanged from the
 previous release — the specification is defined but not yet implemented.
 
+## [0.2.0] - 2026-08-27
+
+SMILES dialect subset with implicit-hydrogen inference; internal error types
+and parsing conveniences.
+
+Canonicalization spec: v1 (`docs/design.md` §4.2-4.3), unchanged from the
+previous release — the specification is defined but not yet implemented.
+
 ### Added
 
+- `chem::DataError` for internal data-loading failures (e.g. invalid rows in
+  `data/elements.csv`), distinct from user-input `ParseError`s.
+- `Atom::isotope` field (mass number; 0 = unspecified), defaulting to 0 so
+  existing formula-parser output and M1 behavior are unchanged.
 - SMILES parser (`chem::parseSmiles`) covering the v1 dialect subset: bare
   organic atoms (`B C N O P S F Cl Br I`), bracketed atoms (all 118 elements)
   with isotope labels and formal charges, single/double/triple bonds,
@@ -21,8 +33,11 @@ previous release — the specification is defined but not yet implemented.
   implicit-hydrogen valence inference. All unsupported syntax (aromatic
   atoms, stereochemistry, disconnected components, wildcards, reaction
   SMILES) is rejected loudly with offset-quoting `ParseError`s.
-- `Atom::isotope` field (mass number; 0 = unspecified), defaulting to 0 so
-  existing formula-parser output and M1 behavior are unchanged.
+
+### Changed
+
+- Parsing hot paths use range-for loops and direct `.size()` bounds instead
+  of cached index loops; behavior is unchanged.
 
 ## [0.1.0] - 2026-08-25
 
