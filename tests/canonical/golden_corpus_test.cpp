@@ -1,8 +1,10 @@
 #include <doctest/doctest.h>
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <fstream>
+#include <iterator>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -14,6 +16,7 @@
 #include "chem/core/molecular_graph.hpp"
 #include "chem/parsing/formula_parser.hpp"
 #include "chem/parsing/smiles_parser.hpp"
+#include "graph_iso.hpp"
 
 namespace {
 
@@ -90,6 +93,25 @@ int storedHydrogenCount(const MolecularGraph& graph) {
 // Splits a dot-joined canonical string into its component strings.
 std::vector<std::string> splitComponents(std::string_view canonical) {
   return split(canonical, '.');
+}
+
+// Merges dot-separated canonical components into one disconnected graph so the
+// whole molecule can be compared against parse(input). parseSmiles rejects
+// dots, so each component is parsed independently and its atoms/bonds are
+// concatenated; components are disjoint, so index offsets simply shift.
+MolecularGraph mergeComponents(const std::vector<std::string>& components) {
+  MolecularGraph merged;
+  for (const std::string& component : components) {
+    const MolecularGraph parsed = chem::parseSmiles(component);
+    const std::ptrdiff_t base = static_cast<std::ptrdiff_t>(merged.atoms().size());
+    for (const auto& atom : parsed.atoms()) {
+      merged.addAtom(atom);
+    }
+    for (const auto& bond : parsed.bonds()) {
+      merged.addBond(base + bond.a, base + bond.b, bond.order);
+    }
+  }
+  return merged;
 }
 
 } // namespace
@@ -179,5 +201,35 @@ TEST_CASE("FR-12c: full corpus canonicalization is byte-deterministic on a secon
   for (std::size_t i = 0; i < entries.size(); ++i) {
     const std::string second = chem::canonicalSmiles(parseEntry(entries[i]));
     CHECK_MESSAGE(second == first_run[i], "determinism drift for ", entries[i].id);
+  }
+}
+
+// ===========================================================================
+// FR-12e: explicit graph-isomorphism guard
+// ===========================================================================
+
+// FR-11b (canonical string equality) plus FR-12b (fixed point) tie both graphs
+// to the same canonical class, but never compare the graphs themselves. This
+// guard closes that gap: parse(input) and parse(expected) must be isomorphic,
+// so a canonicalizer that collapses two distinct graphs onto one string (a
+// completeness regression) fails here even though the string checks pass.
+TEST_CASE("FR-12e: every corpus input graph is isomorphic to its canonical graph") {
+  const std::vector<CorpusEntry> entries = loadCorpus();
+  REQUIRE(entries.size() == 30);
+
+  for (const CorpusEntry& entry : entries) {
+    const MolecularGraph input_graph = parseEntry(entry);
+
+    MolecularGraph expected_graph;
+    if (entry.expected.find('.') == std::string::npos) {
+      expected_graph = chem::parseSmiles(entry.expected);
+    } else {
+      expected_graph = mergeComponents(splitComponents(entry.expected));
+    }
+
+    const graph_iso::SimpleGraph input_view = graph_iso::fromGraph(input_graph);
+    const graph_iso::SimpleGraph expected_view = graph_iso::fromGraph(expected_graph);
+    CHECK_MESSAGE(graph_iso::isomorphic(input_view, expected_view),
+                  "input not isomorphic to canonical for entry ", entry.id);
   }
 }
