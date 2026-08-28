@@ -28,7 +28,7 @@
 
 #include "chem/core/molecular_graph.hpp"
 
-namespace graph_iso {
+namespace chem::test::graph_iso {
 
 struct SkeletonKey {
   int element; // atomic number
@@ -185,4 +185,4 @@ bool isomorphic(const SimpleGraph& a, const SimpleGraph& b) {
   return assign(0);
 }
 
-} // namespace graph_iso
+} // namespace chem::test::graph_iso

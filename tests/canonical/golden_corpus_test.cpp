@@ -116,6 +116,8 @@ MolecularGraph mergeComponents(const std::vector<std::string>& components) {
 
 } // namespace
 
+namespace graph_iso = chem::test::graph_iso;
+
 // ===========================================================================
 // FR-10 / FR-11b: corpus contents and canonical equality
 // ===========================================================================
